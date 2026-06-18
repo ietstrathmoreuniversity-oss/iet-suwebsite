@@ -211,21 +211,41 @@ body.animated-ctas .btn--primary:hover::after{ transform: translateX(100%); }
 .nav__cta{ margin-left: 12px; }
 
 .nav__toggle{
-  display: none; background: transparent; border: 0; padding: 8px;
-  margin-left: auto;
-}
-.nav__toggle span{
-  display: block; width: 22px; height: 2px; background: #fff; margin: 4px 0;
-  transition: transform .25s, opacity .25s;
+  display: none !important;
 }
 
-@media (max-width: 880px){
-  .nav__links, .nav__cta{ display: none; }
-  .nav__toggle{ display: block; }
-  .nav__inner{ gap: 8px; }
+/* Small screens: show 3 links */
+@media (max-width: 640px){
+  .nav__inner{ 
+    gap: 8px; 
+    flex-wrap: wrap;
+  }
   .nav__logo img{ height: 24px; }
   .nav__logo{ padding: 6px 10px; }
   .nav__brand-text{ display: none; }
+  .nav__links{ 
+    gap: 2px !important;
+  }
+  .nav__links a{
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+  /* Hide Leadership, Partners, Contact (4th, 5th, 6th links) */
+  .nav__links a:nth-child(n+4){
+    display: none;
+  }
+}
+
+/* Medium screens: show all links */
+@media (min-width: 641px) and (max-width: 880px){
+  .nav__inner{ 
+    gap: 12px; 
+    flex-wrap: wrap;
+  }
+  .nav__links a{
+    padding: 10px 12px;
+    font-size: 13.5px;
+  }
 }
 
 /* ---------- HERO ---------- */
@@ -1080,39 +1100,6 @@ body[data-display="Inter"]{ --display: "Inter", system-ui, sans-serif; }
 .tweak--toggle input::before{ content:""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .25s; }
 .tweak--toggle input:checked::before{ transform: translateX(16px); }
 
-
-/* ---------- ANNOUNCEMENT BAR ---------- */
-.announce-bar{
-  background: var(--plum);
-  color: #fff;
-  padding: 10px var(--pad);
-  font-size: 13.5px;
-}
-.announce-bar__inner{
-  max-width: var(--maxw);
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.announce-bar__item{
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  line-height: 1.5;
-}
-.announce-bar__label{
-  flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid rgba(203,157,81,.5);
-  border-radius: 999px;
-  padding: 2px 7px;
-}
-
 /* ---------- LEADER PHOTO ---------- */
 .leader__avatar--photo{
   background: var(--line);
@@ -1122,4 +1109,8 @@ body[data-display="Inter"]{ --display: "Inter", system-ui, sans-serif; }
 .leader__avatar--photo img{
   position: absolute;
   inset: 0;
-  width: 100
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

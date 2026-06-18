@@ -140,7 +140,7 @@
 
       {% if events %}
         {% for event in events %}
-        <article class="event-card{% if forloop.counter == 2 %} event-card--featured{% endif %} reveal" style="--delay:.{{ forloop.counter0 }}5s">
+        <article class="event-card{% if forloop.counter == 2 %} event-card--featured{% endif %} reveal" style="--delay:0.05s">
           <div class="event-card__date">
             <span class="event-card__day">{{ event.date|date:"j" }}</span>
             <span class="event-card__mo">{{ event.date|date:"M"|upper }}</span>
@@ -212,7 +212,7 @@
     <div class="leaders">
       {% if officials %}
         {% for official in officials %}
-        <article class="leader reveal" style="--delay:.{{ forloop.counter0 }}5s">
+        <article class="leader reveal" style="--delay:0.05s">
           {% if official.photo %}
           <div class="leader__avatar leader__avatar--photo">
             <img src="{{ official.photo.url }}" alt="{{ official.full_name }}" />
