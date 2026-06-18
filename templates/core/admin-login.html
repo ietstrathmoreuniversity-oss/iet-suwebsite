@@ -1,0 +1,681 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admin Portal — IET Strathmore Chapter{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum:      #53264d;
+    --plum-deep: #1a0a18;
+    --purple:    #964f9f;
+    --gold:      #CB9D51;
+    --gold-soft: #e3c08a;
+    --ink:       #1e1320;
+    --ink-soft:  #4b3a4d;
+    --line:      #e7d9e8;
+    --bg-card:   #ffffff;
+    --display:   "Poppins","Inter",system-ui,sans-serif;
+    --body:      "Inter",system-ui,sans-serif;
+    --error:     #BF2A2B;
+  }
+
+  *,*::before,*::after{ box-sizing: border-box; }
+  html,body{ height: 100%; }
+  body{
+    margin: 0;
+    font-family: var(--body);
+    color: var(--ink);
+    background: var(--plum);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Subtle diagonal circuit pattern overlay */
+  body::before{
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.7) 1px, transparent 1px),
+      linear-gradient(-45deg, rgba(255,255,255,.7) 1px, transparent 1px),
+      radial-gradient(circle at 25px 25px, rgba(203,157,81,.8) 1.5px, transparent 2px);
+    background-size: 50px 50px, 50px 50px, 50px 50px;
+    opacity: .05;
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* radial wash to keep focus on the card */
+  body::after{
+    content: "";
+    position: fixed; inset: 0;
+    background: radial-gradient(60% 60% at 50% 45%, rgba(150,79,159,.3), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---------- Layout ---------- */
+  .shell{
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+    padding: 32px 20px 28px;
+    gap: 28px;
+  }
+
+  /* Browser-bar-style padlock chip at the very top */
+  .secure-chip{
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 14px 7px 10px;
+    background: rgba(0,0,0,.28);
+    border: 1px solid rgba(203,157,81,.35);
+    border-radius: 999px;
+    color: rgba(255,255,255,.85);
+    font-size: 12px; letter-spacing: .04em;
+    backdrop-filter: blur(6px);
+  }
+  .secure-chip svg{ width: 13px; height: 13px; color: var(--gold); }
+  .secure-chip .url{
+    font-family: ui-monospace,"SF Mono",Menlo,monospace;
+    font-size: 11.5px; color: rgba(255,255,255,.7);
+  }
+
+  /* ---------- Card ---------- */
+  .card{
+    position: relative;
+    width: 100%; max-width: 440px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 38px 38px 26px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.08) inset,
+      0 30px 80px -20px rgba(0,0,0,.55),
+      0 8px 30px -10px rgba(83,38,77,.4);
+    overflow: hidden;
+  }
+  /* Gold accent bar */
+  .card::before{
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-soft) 50%, var(--gold) 100%);
+  }
+
+  .card__header{
+    display: grid; gap: 10px; justify-items: center; text-align: center;
+    margin-bottom: 26px;
+  }
+  .card__logo{
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 40px;
+    margin-bottom: 4px;
+  }
+  .card__logo img{ height: 38px; width: auto; display: block; }
+
+  .card__icon{
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(140deg, var(--plum), var(--purple));
+    color: var(--gold);
+    display: inline-grid; place-items: center;
+    box-shadow: 0 8px 20px -8px rgba(83,38,77,.6);
+  }
+  .card__icon svg{ width: 22px; height: 22px; }
+
+  .card__title{
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--plum);
+    margin: 4px 0 0;
+    letter-spacing: -0.01em;
+  }
+  .card__sub{
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    max-width: 32ch;
+  }
+
+  /* ---------- Form ---------- */
+  .form{ display: grid; gap: 16px; }
+  .field{ display: grid; gap: 6px; position: relative; }
+  .field label{
+    font-size: 12px; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .btn{
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 18px;
+    font: inherit; font-weight: 600; font-size: 15px;
+    border: 0; border-radius: 10px;
+    background: var(--plum); color: #fff;
+    cursor: pointer;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    position: relative;
+  }
+  .btn:hover:not(:disabled){
+    background: #683260;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px -10px rgba(83,38,77,.55);
+  }
+  .btn:active:not(:disabled){ transform: translateY(0); }
+  .btn:disabled{ opacity: .55; cursor: not-allowed; }
+  .btn svg{ width: 16px; height: 16px; }
+  .btn .spinner{
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  .btn.is-loading .spinner{ display: inline-block; }
+  .btn.is-loading .btn__label, .btn.is-loading .btn__arrow{ opacity: .5; }
+  @keyframes spin{ to { transform: rotate(360deg); } }
+
+  .ghost-link{
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; border: 0;
+    color: var(--ink-soft); font: inherit; font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    padding: 4px 6px;
+    justify-self: center;
+  }
+  .ghost-link:hover{ color: var(--plum); }
+
+  /* ---------- OTP boxes ---------- */
+  .otp{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  .otp input{
+    width: 100%;
+    aspect-ratio: 1 / 1.15;
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 700; font-size: 22px;
+    color: var(--plum);
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    outline: 0;
+    transition: border-color .15s, box-shadow .2s, transform .15s;
+    -moz-appearance: textfield;
+  }
+  .otp input::-webkit-outer-spin-button,
+  .otp input::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+  .otp input:focus{
+    border-color: var(--purple);
+    box-shadow: 0 0 0 4px rgba(150,79,159,.14);
+  }
+  .otp input.filled{
+    border-color: var(--purple);
+    background: rgba(150,79,159,.05);
+  }
+  .otp.is-complete input{
+    border-color: var(--gold);
+    background: rgba(203,157,81,.08);
+    box-shadow: 0 0 0 3px rgba(203,157,81,.18);
+    animation: gold-pulse .6s ease-out;
+  }
+  @keyframes gold-pulse{
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .resend{
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: var(--ink-soft);
+  }
+  .resend .cooldown{
+    color: rgba(75,58,77,.6);
+    font-variant-numeric: tabular-nums;
+  }
+  .resend button{
+    background: transparent; border: 0; padding: 0;
+    color: var(--purple); font: inherit; font-weight: 500;
+    cursor: pointer;
+  }
+  .resend button:disabled{
+    color: rgba(75,58,77,.5); cursor: not-allowed;
+  }
+  .resend button:hover:not(:disabled){ color: var(--plum); text-decoration: underline; }
+
+  /* ---------- Error message ---------- */
+  .alert{
+    display: none;
+    align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: rgba(191,42,43,.08);
+    border: 1px solid rgba(191,42,43,.25);
+    color: var(--error);
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .alert.is-visible{ display: flex; }
+  .alert svg{ width: 16px; height: 16px; flex: 0 0 auto; }
+
+  /* ---------- Card footer ---------- */
+  .card__foot{
+    margin-top: 24px; padding-top: 18px;
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+  .card__foot svg{ width: 12px; height: 12px; color: var(--gold); }
+
+  /* ---------- Step transitions ---------- */
+  .step{
+    display: none;
+    animation: step-in .45s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .step.is-active{ display: block; }
+  .step--from-right{ animation-name: step-in-right; }
+  .step--from-left{  animation-name: step-in-left; }
+
+  @keyframes step-in-right{
+    from{ opacity: 0; transform: translateX(20px); }
+    to  { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes step-in-left{
+    from{ opacity: 0; transform: translateX(-20px); }
+    to  { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes step-in{
+    from{ opacity: 0; transform: translateY(8px); }
+    to  { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Below-card content ---------- */
+  .below{
+    display: grid; gap: 18px; justify-items: center; text-align: center;
+  }
+  .below__notice{
+    font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+  }
+  .partner-logos{
+    display: flex; align-items: center; gap: 14px;
+    opacity: .55;
+    transition: opacity .25s;
+  }
+  .partner-logos:hover{ opacity: .85; }
+  .partner-logos__iet{
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.9);
+    border-radius: 6px; padding: 5px 8px;
+  }
+  .partner-logos__iet img{ height: 18px; width: auto; display: block; }
+  .partner-logos__sep{
+    width: 1px; height: 22px;
+    background: rgba(255,255,255,.25);
+  }
+  .partner-logos__strath{
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.9);
+    border-radius: 6px; padding: 3px;
+  }
+  .partner-logos__strath img{ height: 26px; width: auto; display: block; border-radius: 3px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 520px){
+    .card{ padding: 32px 24px 24px; border-radius: 14px; }
+    .card__title{ font-size: 20px; }
+    .otp{ gap: 6px; }
+    .otp input{ font-size: 19px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{ animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="shell">
+
+  <!-- CSRF token consumed by JS fetch calls -->
+  {% csrf_token %}
+
+  <!-- Browser-bar-style padlock chip -->
+  <div class="secure-chip" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+    <span class="url">https://admin.iet-strathmore.ke</span>
+  </div>
+
+  <!-- Card -->
+  <main class="card" role="main">
+
+    <!-- STEP 1 — Request Code -->
+    <section class="step is-active" id="step-request" data-screen-label="01 Request Code">
+      <header class="card__header">
+        <span class="card__logo">
+          <img src="{% static 'assets/iet-logo.svg' %}" alt="IET Strathmore" />
+        </span>
+        <span class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        </span>
+        <h1 class="card__title">Admin Portal Login</h1>
+        <p class="card__sub">Click below to send a 6-digit login code to the admin email address.</p>
+      </header>
+
+      <div class="alert" id="alert-1" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r=".5" fill="currentColor"/></svg>
+        <span id="alert-1-msg">Failed to send code. Please try again.</span>
+      </div>
+
+      <div class="form">
+        <button type="button" class="btn" id="sendCodeBtn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn__label">Send Login Code</span>
+          <span class="btn__arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <div class="card__foot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        <span>Secured Portal · IET Strathmore Chapter 2025</span>
+      </div>
+    </section>
+
+    <!-- STEP 2 — Enter OTP -->
+    <section class="step" id="step-2fa" data-screen-label="02 Verify Code">
+      <header class="card__header">
+        <span class="card__logo">
+          <img src="{% static 'assets/iet-logo.svg' %}" alt="IET Strathmore" />
+        </span>
+        <span class="card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6l8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-4.5"/></svg>
+        </span>
+        <h1 class="card__title">Enter Login Code</h1>
+        <p class="card__sub">Enter the 6-digit code sent to the admin email address.</p>
+      </header>
+
+      <div class="alert" id="alert-2" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r=".5" fill="currentColor"/></svg>
+        <span id="alert-2-msg">Invalid or expired code. Please try again.</span>
+      </div>
+
+      <form class="form" id="form-2fa" novalidate>
+        <div class="field">
+          <label for="otp-0">Verification code</label>
+          <div class="otp" id="otp">
+            <input id="otp-0" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1" />
+            <input        inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 2" />
+            <input        inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 3" />
+            <input        inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 4" />
+            <input        inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 5" />
+            <input        inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 6" />
+          </div>
+        </div>
+
+        <div class="resend">
+          <button type="button" id="resendBtn" disabled>Resend Code</button>
+          <span class="cooldown" id="cooldown">Available in 60s</span>
+        </div>
+
+        <button type="submit" class="btn" id="verifyBtn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn__label">Verify &amp; Login</span>
+        </button>
+
+        <button type="button" class="ghost-link" id="backBtn">
+          <span aria-hidden="true">←</span> Back
+        </button>
+      </form>
+
+      <div class="card__foot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        <span>Secured Portal · IET Strathmore Chapter 2025</span>
+      </div>
+    </section>
+
+    <!-- STEP 3 — Success -->
+    <section class="step" id="step-success" data-screen-label="03 Success">
+      <header class="card__header">
+        <span class="card__logo">
+          <img src="{% static 'assets/iet-logo.svg' %}" alt="IET Strathmore" />
+        </span>
+        <span class="card__icon" aria-hidden="true" style="background: linear-gradient(140deg, var(--gold), #b9893d);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a0a18" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <h1 class="card__title">Welcome back, Admin</h1>
+        <p class="card__sub">Authenticated successfully. Redirecting to dashboard…</p>
+      </header>
+      <div class="card__foot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        <span>Secured Portal · IET Strathmore Chapter 2025</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Below-card content -->
+  <div class="below">
+    <span class="below__notice">Unauthorized access is prohibited.</span>
+    <div class="partner-logos" aria-label="IET in partnership with Strathmore University">
+      <span class="partner-logos__iet">
+        <img src="{% static 'assets/iet-logo.svg' %}" alt="IET" />
+      </span>
+      <span class="partner-logos__sep" aria-hidden="true"></span>
+      <span class="partner-logos__strath">
+        <img src="{% static 'assets/strathmore-logo.png' %}" alt="Strathmore University" />
+      </span>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function(){
+  'use strict';
+
+  const stepRequest = document.getElementById('step-request');
+  const step2fa     = document.getElementById('step-2fa');
+  const stepSuccess = document.getElementById('step-success');
+
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  function showStep(el, dir){
+    [stepRequest, step2fa, stepSuccess].forEach(s => {
+      s.classList.remove('is-active', 'step--from-right', 'step--from-left');
+    });
+    if (dir === 'right') el.classList.add('step--from-right');
+    if (dir === 'left')  el.classList.add('step--from-left');
+    void el.offsetWidth;
+    el.classList.add('is-active');
+    setTimeout(() => {
+      const focusable = el.querySelector('input:not([type=hidden])');
+      if (focusable) focusable.focus();
+    }, 200);
+  }
+
+  /* -------- Step 1: Send Code -------- */
+  const sendCodeBtn = document.getElementById('sendCodeBtn');
+  const alert1      = document.getElementById('alert-1');
+  const alert1Msg   = document.getElementById('alert-1-msg');
+
+  async function sendCode(){
+    sendCodeBtn.classList.add('is-loading');
+    sendCodeBtn.disabled = true;
+    alert1.classList.remove('is-visible');
+    try {
+      const res  = await fetch('/admin-login/request-otp/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (res.ok && data.success){
+        showStep(step2fa, 'right');
+        startCooldown(60);
+      } else {
+        alert1Msg.textContent = data.error || 'Failed to send code. Please try again.';
+        alert1.classList.add('is-visible');
+      }
+    } catch {
+      alert1Msg.textContent = 'Network error. Please try again.';
+      alert1.classList.add('is-visible');
+    } finally {
+      sendCodeBtn.classList.remove('is-loading');
+      sendCodeBtn.disabled = false;
+    }
+  }
+
+  sendCodeBtn.addEventListener('click', sendCode);
+
+  /* -------- Step 2: OTP inputs -------- */
+  const otpWrap   = document.getElementById('otp');
+  const otpInputs = [...otpWrap.querySelectorAll('input')];
+  const alert2    = document.getElementById('alert-2');
+  const alert2Msg = document.getElementById('alert-2-msg');
+  const verifyBtn = document.getElementById('verifyBtn');
+
+  function currentCode(){ return otpInputs.map(i => i.value).join(''); }
+
+  function resetOtp(){
+    otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
+    otpWrap.classList.remove('is-complete');
+  }
+
+  otpInputs.forEach((input, idx) => {
+    input.addEventListener('input', (e) => {
+      const v = (e.target.value || '').replace(/\D/g, '');
+      e.target.value = v.slice(-1);
+      e.target.classList.toggle('filled', !!e.target.value);
+      if (e.target.value && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+      otpWrap.classList.toggle('is-complete', currentCode().length === 6);
+      alert2.classList.remove('is-visible');
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && idx > 0){
+        otpInputs[idx - 1].focus();
+        otpInputs[idx - 1].value = '';
+        otpInputs[idx - 1].classList.remove('filled');
+        otpWrap.classList.remove('is-complete');
+      }
+      if (e.key === 'ArrowLeft'  && idx > 0)                    otpInputs[idx - 1].focus();
+      if (e.key === 'ArrowRight' && idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+    });
+    input.addEventListener('paste', (e) => {
+      const text   = (e.clipboardData || window.clipboardData).getData('text');
+      const digits = (text || '').replace(/\D/g, '').slice(0, 6);
+      if (!digits) return;
+      e.preventDefault();
+      digits.split('').forEach((d, i) => {
+        if (otpInputs[i]){ otpInputs[i].value = d; otpInputs[i].classList.add('filled'); }
+      });
+      otpInputs[Math.min(digits.length, 6) - 1].focus();
+      if (digits.length === 6) otpWrap.classList.add('is-complete');
+    });
+  });
+
+  document.getElementById('form-2fa').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = currentCode();
+    if (code.length !== 6){
+      alert2Msg.textContent = 'Please enter all 6 digits.';
+      alert2.classList.add('is-visible');
+      return;
+    }
+    verifyBtn.classList.add('is-loading');
+    verifyBtn.disabled = true;
+    try {
+      const res  = await fetch('/admin-login/verify-otp/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success){
+        showStep(stepSuccess, 'right');
+        setTimeout(() => { window.location.href = '/admin-dashboard/'; }, 1200);
+      } else {
+        alert2Msg.textContent = data.error || 'Invalid or expired code.';
+        alert2.classList.add('is-visible');
+        resetOtp();
+        otpInputs[0].focus();
+      }
+    } catch {
+      alert2Msg.textContent = 'Network error. Please try again.';
+      alert2.classList.add('is-visible');
+    } finally {
+      verifyBtn.classList.remove('is-loading');
+      verifyBtn.disabled = false;
+    }
+  });
+
+  document.getElementById('backBtn').addEventListener('click', () => {
+    resetOtp();
+    alert2.classList.remove('is-visible');
+    showStep(stepRequest, 'left');
+  });
+
+  /* -------- Resend cooldown -------- */
+  const resendBtn  = document.getElementById('resendBtn');
+  const cooldownEl = document.getElementById('cooldown');
+  let cooldownTimer = null;
+
+  function startCooldown(seconds){
+    let s = seconds;
+    resendBtn.disabled = true;
+    cooldownEl.textContent = 'Available in ' + s + 's';
+    clearInterval(cooldownTimer);
+    cooldownTimer = setInterval(() => {
+      s -= 1;
+      if (s <= 0){
+        clearInterval(cooldownTimer);
+        resendBtn.disabled = false;
+        cooldownEl.textContent = 'Ready to resend';
+        return;
+      }
+      cooldownEl.textContent = 'Available in ' + s + 's';
+    }, 1000);
+  }
+
+  resendBtn.addEventListener('click', async () => {
+    resendBtn.disabled = true;
+    cooldownEl.textContent = 'Sending…';
+    try {
+      const res  = await fetch('/admin-login/request-otp/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (res.ok && data.success){
+        cooldownEl.textContent = 'Code sent ✓';
+        resetOtp();
+        otpInputs[0].focus();
+        startCooldown(60);
+      } else {
+        cooldownEl.textContent = 'Failed to resend';
+        resendBtn.disabled = false;
+      }
+    } catch {
+      cooldownEl.textContent = 'Network error';
+      resendBtn.disabled = false;
+    }
+  });
+
+})();
+</script>
+{% endblock %}

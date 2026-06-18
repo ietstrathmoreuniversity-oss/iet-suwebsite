@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}IET Strathmore Student Chapter — Engineering Tomorrow, Together{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- ============ NAVBAR ============ -->
+<header class="nav" data-screen-label="00 Navbar">
+  <div class="nav__inner">
+    <a href="#home" class="nav__brand" aria-label="IET Strathmore Chapter home">
+      <span class="nav__logo">
+        <img src="{% static 'assets/iet-logo.svg' %}" alt="IET" />
+      </span>
+      <span class="nav__brand-text">
+        <strong>Strathmore</strong>
+        <span>Student Chapter</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#events">Events</a>
+      <a href="#leadership">Leadership</a>
+      <a href="#partners">Partners</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <a href="#join" class="btn btn--primary nav__cta">Join Us</a>
+
+    <button class="nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+{% if announcements %}
+<div class="announce-bar">
+  <div class="announce-bar__inner">
+    {% for ann in announcements %}
+    <div class="announce-bar__item">
+      <span class="announce-bar__label">{{ ann.category }}</span>
+      <strong>{{ ann.title }}</strong>
+      {% if ann.body %} — {{ ann.body|truncatewords:18 }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- ============ HERO ============ -->
+<section id="home" class="hero" data-screen-label="01 Hero">
+  <div class="hero__pattern" aria-hidden="true"></div>
+  <div class="hero__inner">
+    <div class="hero__copy reveal">
+      <span class="eyebrow"><span class="eyebrow__dot"></span>IET Strathmore University Student Chapter · Nairobi</span>
+      <h1 class="display">Engineering<br/>Tomorrow,<br/><em>Together.</em></h1>
+      <p class="lede">We are the next generation of engineers — students, builders, and problem-solvers, united under the Institution of Engineering and Technology to shape what comes next for Kenya and the world.</p>
+      <div class="hero__ctas">
+        <a href="#events" class="btn btn--primary">Upcoming Events <span aria-hidden="true">→</span></a>
+        <a href="#about" class="btn btn--ghost">About Us</a>
+      </div>
+      <ul class="hero__stats" aria-label="Chapter at a glance">
+        <li><strong>{% if member_count %}{{ member_count }}+{% else %}320+{% endif %}</strong><span>Active members</span></li>
+        <li><strong>24</strong><span>Events per year</span></li>
+        <li><strong>9</strong><span>Industry partners</span></li>
+      </ul>
+    </div>
+    <div class="hero__media reveal" style="--delay:.15s">
+      <div class="hero__photo" role="img" aria-label="Chapter group photo">
+        {% if header_photo and header_photo.image %}
+        <div class="photo-frame photo-frame--img">
+          <img src="{{ header_photo.image.url }}" alt="{{ header_photo.title }}" />
+        </div>
+        {% else %}
+        <div class="photo-frame">
+          <div class="photo-stripes"></div>
+          <div class="photo-label">
+            <span class="mono">[ chapter group photo ]</span>
+            <span class="mono dim">Upload a Header Photo in the admin gallery</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="hero__chip hero__chip--a">⚡ Next event in 12 days</div>
+      <div class="hero__chip hero__chip--b">🛠 Hardware Lab · Fridays</div>
+    </div>
+  </div>
+  <a class="hero__scroll" href="#partnership" aria-label="Scroll to next section">
+    <span></span>
+  </a>
+</section>
+
+<!-- ============ PARTNERSHIP BANNER ============ -->
+<section id="partnership" class="partnership" data-screen-label="02 Partnership">
+  <div class="partnership__inner reveal">
+    <div class="partnership__logos">
+      <div class="big-logo big-logo--iet">
+        <img src="{% static 'assets/iet-logo.svg' %}" alt="IET" />
+      </div>
+      <div class="partnership__divider" aria-hidden="true">
+        <span class="line"></span>
+        <span class="x">in partnership with</span>
+        <span class="line"></span>
+      </div>
+      <div class="big-logo big-logo--strath">
+        <img src="{% static 'assets/strathmore-logo.png' %}" alt="Strathmore University" />
+      </div>
+    </div>
+    <div class="partnership__copy">
+      <h2 class="h2">A Proud Partnership Between IET <span class="amp">&amp;</span> Strathmore University</h2>
+      <p>For over a decade, Strathmore University has stood for academic rigour and ethical leadership in East Africa. The Institution of Engineering and Technology brings a global community of 168,000+ engineers across 148 countries. Together, our chapter gives Strathmore students a direct line into the world's largest professional engineering body — chartered status, technical journals, mentorship, and a passport to the global profession.</p>
+      <div class="partnership__divider partnership__divider--bottom" aria-hidden="true">
+        <span class="line"></span>
+        <span class="dot"></span>
+        <span class="line"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UPCOMING EVENTS ============ -->
+<section id="events" class="events" data-screen-label="03 Upcoming events">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="eyebrow eyebrow--gold"><span class="eyebrow__dot"></span>What's coming</span>
+      <h2 class="h1">The next three weeks<br/>at IET Strathmore.</h2>
+      <p class="section-sub">Workshops, talks and build sessions — open to every Strathmore student. Members get priority registration.</p>
+    </header>
+
+    <div class="events__grid">
+
+      {% if events %}
+        {% for event in events %}
+        <article class="event-card{% if forloop.counter == 2 %} event-card--featured{% endif %} reveal" style="--delay:.{{ forloop.counter0 }}5s">
+          <div class="event-card__date">
+            <span class="event-card__day">{{ event.date|date:"j" }}</span>
+            <span class="event-card__mo">{{ event.date|date:"M"|upper }}</span>
+          </div>
+          <span class="badge badge--gold">{{ event.event_type }}{% if event.time %} · {{ event.time|time:"g:i A" }}{% endif %}</span>
+          {% if forloop.counter == 2 %}<span class="badge badge--featured">Featured</span>{% endif %}
+          <h3 class="event-card__title">{{ event.title }}</h3>
+          {% if event.description %}<p class="event-card__desc">{{ event.description|truncatewords:30 }}</p>{% endif %}
+          <div class="event-card__meta">
+            {% if event.venue %}<span class="pin">📍 {{ event.venue }}</span>{% endif %}
+            {% if event.seats_total %}<span class="seats">{{ event.seats_total }} seats</span>{% endif %}
+          </div>
+          <a href="#" class="btn btn--primary btn--sm">Register</a>
+          <div class="event-card__glow" aria-hidden="true"></div>
+        </article>
+        {% endfor %}
+      {% else %}
+        <p class="events__note" style="text-align:center;padding:2rem 0;grid-column:1/-1;">No upcoming events right now — check back soon.</p>
+      {% endif %}
+
+    </div>
+    <p class="events__note">Events are managed by the chapter admin team. Listings update weekly — follow us on Instagram for last-minute additions.</p>
+  </div>
+</section>
+
+<!-- ============ PAST EVENTS GALLERY ============ -->
+<section id="past" class="past" data-screen-label="04 Past events">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="eyebrow"><span class="eyebrow__dot"></span>Looking back</span>
+      <h2 class="h1">Our impact so far.</h2>
+      <p class="section-sub">A year of late nights, soldering irons, and silver linings. Here's a glimpse.</p>
+    </header>
+
+    {% if looking_back_items %}
+    <div class="lb-track-wrap">
+      <div class="lb-track" id="lbTrack">
+        {% for item in looking_back_items %}
+        <a href="{% if item.image %}{{ item.image.url }}{% else %}#{% endif %}" class="lb-slide" aria-label="{{ item.title }}">
+          {% if item.image %}
+          <div class="lb-slide__img" style="background-image:url('{{ item.image.url }}')"></div>
+          {% else %}
+          <div class="lb-slide__img lb-slide__img--empty"><span class="mono">[ {{ item.title }} ]</span></div>
+          {% endif %}
+          <div class="lb-slide__caption">
+            <span class="gallery__cat">{{ item.category }}</span>
+            <strong>{{ item.title }}</strong>
+            {% if item.event_date %}<span>{{ item.event_date|date:"F Y" }}</span>{% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <p style="text-align:center;padding:2rem 0;opacity:.5;font-style:italic;">Photos coming soon — check back after our next event.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============ LEADERSHIP ============ -->
+<section id="leadership" class="leadership" data-screen-label="05 Leadership">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="eyebrow eyebrow--plum"><span class="eyebrow__dot"></span>The committee · 2025/26</span>
+      <h2 class="h1">Meet the team.</h2>
+      <p class="section-sub">Seven officers. One mission: build a chapter that actually makes engineering students <em>better</em> engineers.</p>
+    </header>
+
+    <div class="leaders">
+      {% if officials %}
+        {% for official in officials %}
+        <article class="leader reveal" style="--delay:.{{ forloop.counter0 }}5s">
+          {% if official.photo %}
+          <div class="leader__avatar leader__avatar--photo">
+            <img src="{{ official.photo.url }}" alt="{{ official.full_name }}" />
+          </div>
+          {% else %}
+          <div class="leader__avatar"><span class="leader__initials">{{ official.initials }}</span></div>
+          {% endif %}
+          <h4 class="leader__name">{{ official.full_name }}</h4>
+          <p class="leader__role">{{ official.role_title }}</p>
+          {% if official.quote %}<p class="leader__quote">"{{ official.quote }}"</p>{% endif %}
+          {% if official.course %}<p class="leader__course">{{ official.course }}</p>{% endif %}
+        </article>
+        {% endfor %}
+      {% else %}
+        <p style="text-align:center;padding:2rem 0;opacity:.6;grid-column:1/-1;">Leadership team listing coming soon.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEMBER VOICES ============ -->
+<section class="voices" data-screen-label="06 Member voices">
+  <div class="container">
+    <header class="section-head section-head--center reveal">
+      <span class="eyebrow eyebrow--gold"><span class="eyebrow__dot"></span>Member voices</span>
+      <h2 class="h1">Why members keep<br/>coming back.</h2>
+    </header>
+
+    <div class="voices__grid" id="voicesGrid">
+      <figure class="voice reveal" style="--delay:.05s">
+        <span class="voice__mark">"</span>
+        <blockquote>Joining IET Strathmore was the first time I felt like an engineer instead of an engineering student. The mentorship from senior chapter members is what got me my first internship.</blockquote>
+        <figcaption>
+          <span class="voice__name">Faith Wairimu</span>
+          <span class="voice__course">Electrical Engineering · Year 2</span>
+        </figcaption>
+      </figure>
+
+      <figure class="voice reveal" style="--delay:.15s">
+        <span class="voice__mark">"</span>
+        <blockquote>BuildJam was 24 sleepless hours with people who became my closest friends. We didn't win — we built something we still use. That mattered more.</blockquote>
+        <figcaption>
+          <span class="voice__name">Tony Kibet</span>
+          <span class="voice__course">Mechatronics · Year 3</span>
+        </figcaption>
+      </figure>
+
+      <figure class="voice reveal" style="--delay:.25s">
+        <span class="voice__mark">"</span>
+        <blockquote>I joined to put it on my CV. I stayed because the Friday Hardware Lab is genuinely the best three hours of my week.</blockquote>
+        <figcaption>
+          <span class="voice__name">Mercy Atieno</span>
+          <span class="voice__course">Telecommunications · Year 4</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="voices__dots" id="voicesDots" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- ============ ABOUT IET ============ -->
+<section id="about" class="about" data-screen-label="07 About IET">
+  <div class="container about__inner">
+    <div class="about__copy reveal">
+      <span class="eyebrow"><span class="eyebrow__dot"></span>About the IET</span>
+      <h2 class="h1">A global home for<br/>working engineers.</h2>
+      <p>The Institution of Engineering and Technology (IET) is one of the world's largest engineering institutions — chartered in the United Kingdom, recognised across the globe, and home to a community committed to making engineering work for people.</p>
+      <p>Our chapter at Strathmore is the East African gateway. Joining gives you:</p>
+      <ul class="checks">
+        <li>A direct path to <strong>Chartered (CEng)</strong> and Incorporated Engineer status</li>
+        <li>Free access to IET technical journals, e-books, and the IET Library</li>
+        <li>Mentorship from working engineers across 148 countries</li>
+        <li>Travel and project grants — including the IET Engineering Horizons Bursary</li>
+        <li>A line on your CV that hiring managers from Nairobi to London actually recognise</li>
+      </ul>
+      <a href="#join" class="btn btn--plum">Read membership benefits →</a>
+    </div>
+
+    <aside class="about__stats reveal" style="--delay:.15s">
+      <div class="stat stat--big">
+        <span class="stat__num">168K<span class="plus">+</span></span>
+        <span class="stat__label">Engineers worldwide</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num">148</span>
+        <span class="stat__label">Countries</span>
+      </div>
+      <div class="stat stat--gold">
+        <span class="stat__num">24</span>
+        <span class="stat__label">Chapter events / year</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num">150<span class="yrs">yrs</span></span>
+        <span class="stat__label">Since founding</span>
+      </div>
+      <div class="stat stat--wide stat--accent">
+        <span class="stat__num">320<span class="plus">+</span></span>
+        <span class="stat__label">Strathmore chapter members</span>
+        <svg class="stat__sparkle" viewBox="0 0 200 40" aria-hidden="true">
+          <polyline points="0,30 25,22 50,28 75,16 100,20 125,10 150,14 175,6 200,8" fill="none" stroke="#CB9D51" stroke-width="2"/>
+        </svg>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ PARTNERS ============ -->
+<section id="partners" class="partners" data-screen-label="08 Partners">
+  <div class="container">
+    <header class="section-head section-head--center reveal">
+      <span class="eyebrow"><span class="eyebrow__dot"></span>Backed by</span>
+      <h2 class="h1">Our partners.</h2>
+      <p class="section-sub">Industry friends who help us run workshops, sponsor BuildJam prizes, and open doors for our members.</p>
+    </header>
+
+    {% if partner_items %}
+    <div class="partner-ticker-wrap">
+      <div class="partner-ticker" id="partnerTicker">
+        {% for p in partner_items %}
+        <a href="{{ p.description }}" class="partner-logo" target="_blank" rel="noopener noreferrer" title="{{ p.title }}">
+          {% if p.image %}
+          <img src="{{ p.image.url }}" alt="{{ p.title }}" />
+          {% else %}
+          <span class="partner-logo__name">{{ p.title }}</span>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============ JOIN US CTA ============ -->
+<section id="join" class="join" data-screen-label="09 Join CTA">
+  <div class="join__pattern" aria-hidden="true"></div>
+  <div class="container join__inner reveal">
+    <h2 class="display join__title">Ready to shape the<br/>future of engineering?</h2>
+    <p class="join__sub">Membership is open to every Strathmore student studying — or curious about — engineering, technology, or applied sciences. KSh 500 / semester. Zero gatekeeping.</p>
+    <div class="join__ctas">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLScpkomfl3yjYB6t444UOVd5xhHyL6xnYRF8dVSWmepoPyvjCw/viewform" target="_blank" rel="noopener noreferrer" class="btn btn--gold btn--lg">Become a Member</a>
+      <a href="#contact" class="btn btn--ghost btn--lg">Talk to a Chapter Officer</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer id="contact" class="footer" data-screen-label="10 Footer">
+  <div class="container footer__inner">
+    <div class="footer__col footer__col--about">
+      <div class="footer__brand">
+        <span class="footer__logo">
+          <img src="{% static 'assets/iet-logo.svg' %}" alt="IET" />
+        </span>
+        <span class="footer__brand-text">
+          <strong>IET Strathmore</strong>
+          <span>Student Chapter · Nairobi</span>
+        </span>
+      </div>
+      <p class="footer__desc">The Institution of Engineering and Technology Student Chapter at Strathmore University — a chartered home for engineering students in East Africa, since 2025.</p>
+    </div>
+
+    <div class="footer__col">
+      <h5>Quick links</h5>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About IET</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#leadership">Leadership</a></li>
+        <li><a href="#partners">Partners</a></li>
+        <li><a href="#join">Join us</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <h5>Contact</h5>
+      <ul class="footer__contact">
+        <li><span class="ico">✉</span><a href="mailto:iet.strathmoreuniversity@gmail.com">iet.strathmoreuniversity@gmail.com</a></li>
+        <li><span class="ico">◎</span><a href="#">@iet.strathmore</a> <em>· Instagram</em></li>
+        <li><span class="ico">in</span><a href="#">IET Strathmore Chapter</a> <em>· LinkedIn</em></li>
+        <li><span class="ico">⌬</span><a href="#">+254 700 000 000</a> <em>· WhatsApp</em></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__divider" aria-hidden="true"></div>
+
+  <div class="container footer__bottom">
+    <span>© 2026 IET Strathmore Student Chapter. All rights reserved.</span>
+    <span class="footer__chip">Chartered by IET · Recognised by Strathmore University Students Council</span>
+  </div>
+</footer>
+
+<!-- ============ TWEAKS PANEL ============ -->
+<div id="tweaks" class="tweaks" hidden>
+  <div class="tweaks__head">
+    <strong>Tweaks</strong>
+    <button class="tweaks__close" aria-label="Close tweaks">×</button>
+  </div>
+  <div class="tweaks__body">
+    <label class="tweak">
+      <span>Hero pattern</span>
+      <select data-tweak="pattern">
+        <option value="circuit">Circuit board</option>
+        <option value="grid">Tech grid</option>
+        <option value="dots">Soft dots</option>
+        <option value="none">None</option>
+      </select>
+    </label>
+    <label class="tweak">
+      <span>Events section</span>
+      <select data-tweak="eventsTheme">
+        <option value="dark">Dark (near-black)</option>
+        <option value="plum">Plum (#53264d)</option>
+        <option value="light">Light lavender</option>
+      </select>
+    </label>
+    <label class="tweak">
+      <span>Display font</span>
+      <select data-tweak="displayFont">
+        <option value="Poppins">Poppins</option>
+        <option value="Inter">Inter</option>
+      </select>
+    </label>
+    <label class="tweak tweak--toggle">
+      <span>Animated CTAs</span>
+      <input type="checkbox" data-tweak="animatedCtas" checked />
+    </label>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}
