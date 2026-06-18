@@ -214,10 +214,12 @@ body.animated-ctas .btn--primary:hover::after{ transform: translateX(100%); }
 }
 
 /* Small screens: show 3 links */
-@media (max-width: 440px){
+@media (min-width: 220px) and (max-width: 640px){
   .nav__inner{ 
     gap: 8px; 
     flex-wrap: wrap;
+    width: 100%;
+    height: auto;
   }
   .nav__logo img{ height: 24px; }
   .nav__logo{ padding: 6px 10px; }
