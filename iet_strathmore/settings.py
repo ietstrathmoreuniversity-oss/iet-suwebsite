@@ -85,8 +85,22 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Media configuration
+# Use an absolute /tmp/media path in production (serverless platforms like Vercel
+# have a read-only project filesystem). Locally (DEBUG=True) continue to use
+# the repository media folder.
+MEDIA_URL = '/media/'
+if not DEBUG:
+    MEDIA_ROOT = Path('/tmp/media')
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+# Ensure the media directory exists when writable
+try:
+    MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+except Exception:
+    # Best-effort only; avoid breaking startup if creation fails
+    pass
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
