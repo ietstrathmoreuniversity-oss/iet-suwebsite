@@ -147,16 +147,47 @@ def home(request):
 def admin_login(request):
     if request.session.get('is_admin'):
         return redirect('admin_dashboard')
-    return render(request, 'core/admin-login.html')
+    officials = Official.objects.filter(is_active=True).order_by('display_order', 'full_name')
+    return render(request, 'core/admin-login.html', {
+        'officials': officials,
+    })
 
 
 @require_POST
 def request_otp(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+    official_id = data.get('official_id')
+    if not official_id:
+        return JsonResponse({'success': False, 'error': 'Please select your role before sending a code.'}, status=400)
+
+    if official_id == 'superuser':
+        email = ADMIN_EMAIL
+        official_name = 'Superuser'
+        official_role = 'Default Admin'
+        login_official_id = 'superuser'
+    else:
+        try:
+            official = Official.objects.get(pk=official_id, is_active=True)
+        except Official.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Selected official is not valid.'}, status=400)
+        email = official.email
+        official_name = official.full_name
+        official_role = official.role_title
+        login_official_id = official.id
+
     AdminOTP.objects.filter(used=False).update(used=True)
     code = ''.join(random.choices(string.digits, k=6))
     expires_at = timezone.now() + timedelta(minutes=10)
     AdminOTP.objects.create(code=code, expires_at=expires_at)
+    request.session['login_official_id'] = login_official_id
+    request.session['official_name'] = official_name
+    request.session['official_role'] = official_role
     otp_plain = (
+        f'Hi {official_name},\n\n'
         f'Your IET Strathmore admin login code is: {code}\n\n'
         f'This code expires in 10 minutes.\n\n'
         f'If you did not request this, please ignore this email.\n\n'
@@ -204,10 +235,10 @@ def request_otp(request):
 
     try:
         send_mail(
-            subject='IET Strathmore Admin Login Code',
+            subject=f'IET Strathmore Admin Login Code for {official_name}',
             message=otp_plain,
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[ADMIN_EMAIL],
+            recipient_list=[email],
             html_message=otp_html,
             fail_silently=False,
         )
@@ -228,12 +259,24 @@ def verify_otp(request):
     code = data.get('code', '').strip()
     if len(code) != 6 or not code.isdigit():
         return JsonResponse({'success': False, 'error': 'Invalid code format'}, status=400)
+    login_official_id = request.session.get('login_official_id')
+    if not login_official_id:
+        return JsonResponse({'success': False, 'error': 'Session expired. Please request a new code.'}, status=400)
     now = timezone.now()
     try:
         otp = AdminOTP.objects.filter(code=code, used=False, expires_at__gt=now).latest('created_at')
         otp.used = True
         otp.save()
         request.session['is_admin'] = True
+        request.session['official_id'] = login_official_id
+        request.session.pop('login_official_id', None)
+        try:
+            official = Official.objects.get(pk=login_official_id)
+            request.session['official_name'] = official.full_name
+            request.session['official_role'] = official.role_title
+        except Official.DoesNotExist:
+            request.session['official_name'] = 'Admin'
+            request.session['official_role'] = 'Chapter Admin'
         request.session.set_expiry(3600 * 8)
         return JsonResponse({'success': True})
     except AdminOTP.DoesNotExist:
@@ -243,7 +286,12 @@ def verify_otp(request):
 def admin_dashboard(request):
     if not request.session.get('is_admin'):
         return redirect('admin_login')
-    return render(request, 'core/admin-dashboard.html')
+    official_name = request.session.get('official_name', 'Admin')
+    official_role = request.session.get('official_role', 'Chapter Admin')
+    return render(request, 'core/admin-dashboard.html', {
+        'official_name': official_name,
+        'official_role': official_role,
+    })
 
 
 def admin_logout(request):

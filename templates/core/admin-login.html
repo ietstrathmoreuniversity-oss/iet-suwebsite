@@ -152,6 +152,22 @@
     letter-spacing: .06em; text-transform: uppercase;
     color: var(--ink-soft);
   }
+  .input{
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    transition: border-color .15s, box-shadow .2s;
+  }
+  .input:focus{
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 4px rgba(150,79,159,.08);
+  }
 
   .btn{
     display: inline-flex; align-items: center; justify-content: center;
@@ -372,7 +388,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
         </span>
         <h1 class="card__title">Admin Portal Login</h1>
-        <p class="card__sub">Click below to send a 6-digit login code to the admin email address.</p>
+        <p class="card__sub">Choose your role, then send a 6-digit login code to your official email.</p>
       </header>
 
       <div class="alert" id="alert-1" role="alert">
@@ -381,6 +397,16 @@
       </div>
 
       <div class="form">
+        <div class="field">
+          <label for="officialSelect">Choose your role</label>
+          <select id="officialSelect" class="input">
+            <option value="">Select your official role</option>
+            <option value="superuser">Superuser — Default Admin</option>
+            {% for official in officials %}
+              <option value="{{ official.id }}">{{ official.full_name }} — {{ official.role_title }}</option>
+            {% endfor %}
+          </select>
+        </div>
         <button type="button" class="btn" id="sendCodeBtn">
           <span class="spinner" aria-hidden="true"></span>
           <span class="btn__label">Send Login Code</span>
@@ -514,6 +540,13 @@
   const alert1Msg   = document.getElementById('alert-1-msg');
 
   async function sendCode(){
+    const officialSelect = document.getElementById('officialSelect');
+    const officialId = officialSelect.value;
+    if (!officialId){
+      alert1Msg.textContent = 'Please choose your role before sending the code.';
+      alert1.classList.add('is-visible');
+      return;
+    }
     sendCodeBtn.classList.add('is-loading');
     sendCodeBtn.disabled = true;
     alert1.classList.remove('is-visible');
@@ -521,7 +554,7 @@
       const res  = await fetch('/admin-login/request-otp/', {
         method: 'POST',
         headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ official_id: officialId }),
       });
       const data = await res.json();
       if (res.ok && data.success){

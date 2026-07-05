@@ -32,12 +32,12 @@
 
     <div class="sidebar__user">
       <div class="avatar avatar--md">
-        <span>AD</span>
+        <span>{{ official_name|default:'AD'|slice:':2'|upper }}</span>
         <span class="avatar__dot" aria-hidden="true"></span>
       </div>
       <div class="sidebar__user-info">
-        <strong>Admin</strong>
-        <span>Chapter Admin</span>
+        <strong>{{ official_name|default:'Admin' }}</strong>
+        <span>{{ official_role|default:'Chapter Admin' }}</span>
       </div>
     </div>
 
@@ -97,10 +97,10 @@
         </button>
 
         <button class="topbar__profile" id="profileBtn">
-          <span class="avatar avatar--sm"><span>AD</span></span>
+          <span class="avatar avatar--sm"><span>{{ official_name|default:'AD'|slice:':2'|upper }}</span></span>
           <span class="topbar__profile-text">
-            <strong>Admin</strong>
-            <span>Chapter Admin</span>
+            <strong>{{ official_name|default:'Admin' }}</strong>
+            <span>{{ official_role|default:'Chapter Admin' }}</span>
           </span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
           <div class="dropdown" id="profileDropdown">
