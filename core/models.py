@@ -1,5 +1,9 @@
+import os
+import uuid
+
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class AdminOTP(models.Model):
@@ -57,11 +61,18 @@ GALLERY_CATEGORY_CHOICES = [
 YEAR_CHOICES = [(i, f'Year {i}') for i in range(1, 6)]
 
 
+def official_photo_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    slug = slugify(instance.role_title or instance.full_name) or 'official'
+    name = f'{slug}-{uuid.uuid4().hex[:8]}{ext}'
+    return os.path.join('officials', name)
+
+
 class Official(models.Model):
     full_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     role_title = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to='officials/', blank=True, null=True)
+    photo = models.ImageField(upload_to=official_photo_path, blank=True, null=True)
     permission_level = models.CharField(max_length=20, choices=PERMISSION_CHOICES, default='Coordinator')
     is_active = models.BooleanField(default=True)
     quote = models.TextField(blank=True)
@@ -81,6 +92,13 @@ class Official(models.Model):
         return self.full_name
 
 
+def event_cover_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    slug = slugify(instance.title) or 'event'
+    name = f'{slug}-{uuid.uuid4().hex[:8]}{ext}'
+    return os.path.join('events', name)
+
+
 class Event(models.Model):
     title = models.CharField(max_length=200)
     event_type = models.CharField(max_length=20, choices=EVENT_TYPE_CHOICES, default='Workshop')
@@ -88,7 +106,7 @@ class Event(models.Model):
     time = models.TimeField(blank=True, null=True)
     venue = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
-    cover_image = models.ImageField(upload_to='events/', blank=True, null=True)
+    cover_image = models.ImageField(upload_to=event_cover_path, blank=True, null=True)
     status = models.CharField(max_length=20, choices=[('Published', 'Published'), ('Draft', 'Draft')], default='Draft')
     show_on_landing = models.BooleanField(default=True)
     seats_total = models.PositiveIntegerField(blank=True, null=True)
@@ -143,11 +161,18 @@ class Member(models.Model):
         return self.full_name
 
 
+def gallery_image_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    slug = slugify(instance.title) or 'gallery'
+    name = f'{slug}-{uuid.uuid4().hex[:8]}{ext}'
+    return os.path.join('gallery', name)
+
+
 class GalleryItem(models.Model):
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=30, choices=GALLERY_CATEGORY_CHOICES, default='Other')
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='gallery/', blank=True, null=True)
+    image = models.ImageField(upload_to=gallery_image_path, blank=True, null=True)
     event_date = models.DateField(blank=True, null=True)
     photo_type = models.CharField(max_length=20, choices=PHOTO_TYPE_CHOICES, default='looking_back')
     display_order = models.PositiveSmallIntegerField(default=0)

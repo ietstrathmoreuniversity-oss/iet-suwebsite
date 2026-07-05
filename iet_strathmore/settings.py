@@ -9,9 +9,9 @@ env = environ.Env(
 )
 env.read_env(BASE_DIR / '.env')
 
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-change-me-in-production')
+SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', '.vercel.app'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'core',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -56,8 +58,7 @@ WSGI_APPLICATION = 'iet_strathmore.wsgi.application'
 
 DATABASES = {
     'default': env.db(
-        'DATABASE_URL',
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}'
+        'DATABASE_URL'
     )
 }
 
@@ -85,29 +86,18 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media configuration
-# Prefer the repo media folder when writable; otherwise fallback to /tmp/media.
 MEDIA_URL = '/media/'
-MEDIA_DIR = BASE_DIR / 'media'
-try:
-    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
-except Exception:
-    pass
 
-if MEDIA_DIR.exists() and os.access(MEDIA_DIR, os.W_OK | os.X_OK):
-    MEDIA_ROOT = MEDIA_DIR
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME', default=''),
+    'API_KEY': env('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': env('CLOUDINARY_API_SECRET', default=''),
+}
+
+if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
-    MEDIA_ROOT = Path('/tmp/media')
-    try:
-        MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
-    except Exception:
-        pass
-
-# Ensure the media directory exists when writable
-try:
-    MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
-except Exception:
-    pass
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -115,6 +105,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
