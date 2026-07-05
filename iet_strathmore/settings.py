@@ -95,13 +95,20 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': env('CLOUDINARY_API_SECRET', default=''),
 }
 
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
+
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    STORAGES['default'] = {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'}
     CLOUDINARY_URL = f"cloudinary://{CLOUDINARY_STORAGE['API_KEY']}:{CLOUDINARY_STORAGE['API_SECRET']}@{CLOUDINARY_STORAGE['CLOUD_NAME']}"
 else:
     if not DEBUG:
         raise ImproperlyConfigured('Cloudinary credentials are required in production for file storage.')
     MEDIA_ROOT = BASE_DIR / 'media'
+    STORAGES['default'] = {'BACKEND': 'django.core.files.storage.FileSystemStorage'}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
