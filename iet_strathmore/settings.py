@@ -90,7 +90,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # have a read-only project filesystem). Locally (DEBUG=True) continue to use
 # the repository media folder.
 MEDIA_URL = '/media/'
-if not DEBUG:
+USE_TMP_MEDIA = bool(os.getenv('VERCEL')) or not DEBUG
+if USE_TMP_MEDIA:
     MEDIA_ROOT = Path('/tmp/media')
 else:
     MEDIA_ROOT = BASE_DIR / 'media'
