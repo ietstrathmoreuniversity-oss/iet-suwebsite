@@ -131,3 +131,10 @@ All endpoints are under `/api/` and require an active admin session.
 | GET/POST | `/api/announcements/` | List or create announcements |
 | GET/POST/DELETE | `/api/announcements/<id>/` | Get, update, or delete an announcement |
 | GET | `/api/stats/` | Dashboard stat counts |
+
+
+'''powershell
+npx supabase db query "GRANT SELECT ON public.users TO authenticated;"; npx supabase db query "GRANT SELECT ON public.user_roles TO authenticated;"; npx supabase db query "SELECT grantee, privilege_type FROM information_schema.role_table_grants WHERE table_schema='public' AND table_name='users' ORDER BY grantee;"; npx supabase db query "SELECT grantee, privilege_type FROM information_schema.role_table_grants WHERE table_schema='public' AND table_name='user_roles' ORDER BY grantee;"
+npx supabase db query "SELECT grantee, privilege_type FROM information_schema.role_table_grants WHERE table_schema='public' AND table_name='users' ORDER BY grantee;"
+npx supabase db query "SELECT grantee, privilege_type FROM information_schema.role_table_grants WHERE table_schema='public' AND table_name='user_roles' ORDER BY grantee;"
+'''
