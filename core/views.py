@@ -270,13 +270,17 @@ def verify_otp(request):
         request.session['is_admin'] = True
         request.session['official_id'] = login_official_id
         request.session.pop('login_official_id', None)
-        try:
-            official = Official.objects.get(pk=login_official_id)
-            request.session['official_name'] = official.full_name
-            request.session['official_role'] = official.role_title
-        except Official.DoesNotExist:
+        if login_official_id == 'superuser':
             request.session['official_name'] = 'Admin'
             request.session['official_role'] = 'Chapter Admin'
+        else:
+            try:
+                official = Official.objects.get(pk=login_official_id)
+                request.session['official_name'] = official.full_name
+                request.session['official_role'] = official.role_title
+            except Official.DoesNotExist:
+                request.session['official_name'] = 'Admin'
+                request.session['official_role'] = 'Chapter Admin'
         request.session.set_expiry(3600 * 8)
         return JsonResponse({'success': True})
     except AdminOTP.DoesNotExist:
