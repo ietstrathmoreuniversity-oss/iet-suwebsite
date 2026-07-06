@@ -133,6 +133,18 @@ def home(request):
     partner_items = GalleryItem.objects.filter(photo_type='partners').order_by('display_order', 'id')
     announcements = Announcement.objects.filter(is_published=True).order_by('-created_at')[:3]
     member_count = Member.objects.filter(is_active=True).count()
+
+    next_event = Event.objects.filter(status='Published', date__gte=today).order_by('date', 'time').first()
+    next_event_days = None
+    if next_event:
+        days = (next_event.date - today).days
+        if days == 0:
+            next_event_days = 'Today'
+        elif days == 1:
+            next_event_days = 'Tomorrow'
+        else:
+            next_event_days = f'Next event in {days} days'
+
     return render(request, 'core/index.html', {
         'events': events,
         'officials': officials,
@@ -141,6 +153,8 @@ def home(request):
         'partner_items': partner_items,
         'announcements': announcements,
         'member_count': member_count,
+        'next_event': next_event,
+        'next_event_days': next_event_days,
     })
 
 

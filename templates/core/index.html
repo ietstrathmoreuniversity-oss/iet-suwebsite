@@ -90,8 +90,17 @@
         </div>
         {% endif %}
       </div>
-      <div class="hero__chip hero__chip--a">⚡ Next event in 12 days</div>
-      <div class="hero__chip hero__chip--b">🛠 Hardware Lab · Fridays</div>
+      {% if next_event %}
+      <div class="hero__chip hero__chip--a">
+        ⚡ {% if next_event_days == 'Today' %}Next event today{% elif next_event_days == 'Tomorrow' %}Next event tomorrow{% else %}{{ next_event_days }}{% endif %}
+      </div>
+      <div class="hero__chip hero__chip--b">
+        🛠 {{ next_event.event_type }} · {{ next_event.date|date:"j M" }}{% if next_event.time %} · {{ next_event.time|time:"g:i A" }}{% endif %}
+      </div>
+      {% else %}
+      <div class="hero__chip hero__chip--a">⚡ No upcoming event</div>
+      <div class="hero__chip hero__chip--b">🛠 Check back soon</div>
+      {% endif %}
     </div>
   </div>
   <a class="hero__scroll" href="#partnership" aria-label="Scroll to next section">
