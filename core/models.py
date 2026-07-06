@@ -110,6 +110,7 @@ class Event(models.Model):
     status = models.CharField(max_length=20, choices=[('Published', 'Published'), ('Draft', 'Draft')], default='Draft')
     show_on_landing = models.BooleanField(default=True)
     seats_total = models.PositiveIntegerField(blank=True, null=True)
+    registration_url = models.URLField(max_length=500, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

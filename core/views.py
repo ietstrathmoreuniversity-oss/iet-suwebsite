@@ -64,6 +64,7 @@ def _ser_event(e):
         'venue': e.venue,
         'description': e.description,
         'cover_image': e.cover_image.url if e.cover_image else None,
+        'registration_url': e.registration_url,
         'status': e.status,
         'show_on_landing': e.show_on_landing,
         'seats_total': e.seats_total,
@@ -361,6 +362,7 @@ def api_events(request):
                 time=request.POST.get('time') or None,
                 venue=request.POST.get('venue', '').strip(),
                 description=request.POST.get('description', '').strip(),
+                registration_url=request.POST.get('registration_url', '').strip(),
                 status=request.POST.get('status', 'Draft'),
                 show_on_landing=request.POST.get('show_on_landing') == '1',
                 seats_total=int(request.POST['seats_total']) if request.POST.get('seats_total') else None,
@@ -396,6 +398,7 @@ def api_event_detail(request, pk):
             e.time = request.POST.get('time') or None
             e.venue = request.POST.get('venue', e.venue).strip()
             e.description = request.POST.get('description', e.description).strip()
+            e.registration_url = request.POST.get('registration_url', e.registration_url).strip()
             e.status = request.POST.get('status', e.status)
             e.show_on_landing = request.POST.get('show_on_landing') == '1'
             if request.POST.get('seats_total'):

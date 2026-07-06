@@ -162,7 +162,11 @@
             {% if event.venue %}<span class="pin">📍 {{ event.venue }}</span>{% endif %}
             {% if event.seats_total %}<span class="seats">{{ event.seats_total }} seats</span>{% endif %}
           </div>
-          <a href="#" class="btn btn--primary btn--sm">Register</a>
+          {% if event.registration_url %}
+          <a href="{{ event.registration_url }}" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Register</a>
+          {% else %}
+          <a href="#" class="btn btn--primary btn--sm btn--disabled" aria-disabled="true">Register</a>
+          {% endif %}
           <div class="event-card__glow" aria-hidden="true"></div>
         </article>
         {% endfor %}

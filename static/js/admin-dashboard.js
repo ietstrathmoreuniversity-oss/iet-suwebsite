@@ -252,6 +252,8 @@
       $('#evtTime').value = evt.time || '';
       $('#evtVenue').value = evt.venue || '';
       $('#evtDesc').value = evt.description || '';
+      const regUrl = $('#evtRegistrationUrl');
+      if (regUrl) regUrl.value = evt.registration_url || '';
       pendingAssignments = evt.assignments.map(a => ({ ...a }));
       setToggle('status', evt.status);
       setToggle('visibility', evt.show_on_landing ? 'Show' : 'Hide');
@@ -303,6 +305,7 @@
     fd.append('time', $('#evtTime').value);
     fd.append('venue', $('#evtVenue').value.trim());
     fd.append('description', $('#evtDesc').value.trim());
+    fd.append('registration_url', $('#evtRegistrationUrl').value.trim());
     fd.append('status', getToggleVal('status') || 'Draft');
     fd.append('show_on_landing', getToggleVal('visibility') === 'Show' ? '1' : '0');
     const imgFile = $('#dropzone input[type=file]').files[0];
