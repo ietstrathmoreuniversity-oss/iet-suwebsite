@@ -177,7 +177,7 @@ def request_otp(request):
         email = official.email
         official_name = official.full_name
         official_role = official.role_title
-        login_official_id = official.id
+        login_official_id = official.pk
 
     AdminOTP.objects.filter(used=False).update(used=True)
     code = ''.join(random.choices(string.digits, k=6))
