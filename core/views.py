@@ -627,6 +627,10 @@ def _send_official_welcome(official):
         As a chapter official you are part of a team driving engineering excellence at Strathmore University.
         Your role is key to building a community that connects students to the global engineering profession.
       </p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#4b3a4d;">
+        To log in, please visit the admin portal and sign in with your official role:
+        <a href="https://ietstrathmore.vercel.app/admin-login/" style="color:#53264d; text-decoration:underline;">IET Strathmore Student Chapter — Engineering Tomorrow, Together</a>
+      </p>
       <p style="margin:0 0 28px;font-size:15px;line-height:1.65;color:#4b3a4d;">
         If you have any questions or need to flag anything, reply to this email or reach out to the
         admin team directly.
